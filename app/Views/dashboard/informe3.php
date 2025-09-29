@@ -66,7 +66,7 @@
 
       btnDatos.addEventListener("click", async () => {
         try {
-          const response = await fetch('<?= base_url('public/api/getdatainforme3cache') ?>'); // ✅ corregido
+          const response = await fetch('<?= base_url('public/api/getdatainforme3cache') ?>'); 
           
           if (!response.ok) {
             throw new Error('No se pudo conectar al servidor');

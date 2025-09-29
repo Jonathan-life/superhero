@@ -28,70 +28,70 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
 
     <script>
-      const lienzo = document.getElementById("lienzo");
-      const btnDatos = document.getElementById("obteener-datos");
-      let grafico = null;
+  const lienzo = document.getElementById("lienzo");
+  const btnDatos = document.getElementById("obteener-datos");
+  let grafico = null;
 
-      function renderGraphyc() {
-        grafico = new Chart(lienzo, {
-          type: 'bar',
-          data: {
-            labels: [],
-            datasets: [{
-              label: '',
-              data: [],
-              backgroundColor: [
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(255, 205, 86, 0.2)',
-                'rgba(153, 102, 255, 0.2)'
-              ],
-              borderColor: [
-                'rgba(75, 192, 192, 1)',
-                'rgba(255, 99, 132, 1)',
-                'rgba(255, 205, 86, 1)',
-                'rgba(153, 102, 255, 1)'
-              ],
-              borderWidth: 1
-            }]
-          },
-          options: {
-            responsive: true,
-            scales: {
-              y: {
-                beginAtZero: true
-              }
-            }
+  function renderGraphyc() {
+    grafico = new Chart(lienzo, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [{
+          label: '',
+          data: [],
+          backgroundColor: [
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(153, 102, 255, 0.2)'
+          ],
+          borderColor: [
+            'rgba(75, 192, 192, 1)',
+            'rgba(255, 99, 132, 1)',
+            'rgba(153, 102, 255, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
           }
-        });
+        }
+      }
+    });
+  }
+
+  btnDatos.addEventListener("click", async () => {
+    try {
+      const response = await fetch('<?= base_url('public/api/getDataInformeGender') ?>');
+
+      if (!response.ok) {
+        throw new Error('No se pudo conectar al servidor');
       }
 
-      btnDatos.addEventListener("click", async () => {
-        try {
-          const response = await fetch('<?= base_url('public/api/getdatainforme3cache') ?>');
-          
-          if (!response.ok) {
-            throw new Error('No se pudo conectar al servidor');
-          }
+      const data = await response.json();
 
-          const data = await response.json();
+      if (data.success) {
+        // Cambiamos alignment -> gender
+        grafico.data.labels = data.resumen.map(row => row.gender);
+        grafico.data.datasets[0].data = data.resumen.map(row => row.total_heroes);
+        grafico.data.datasets[0].label = data.message;
+        grafico.update();
+      } else {
+        alert("No se encontraron datos.");
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert("Ocurrió un error al obtener los datos.");
+    }
+  });
 
-          if (data.success) {
-            grafico.data.labels = data.resumen.map(row => row.alignment);
-            grafico.data.datasets[0].data = data.resumen.map(row => row.total);
-            grafico.data.datasets[0].label = data.message;
-            grafico.update();
-          } else {
-            alert("No se encontraron datos.");
-          }
-        } catch (error) {
-          console.error('Error:', error);
-          alert("Ocurrió un error al obtener los datos.");
-        }
-      });
 
-      // Inicializa gráfico vacío
-      renderGraphyc();
-    </script>
+  renderGraphyc();
+</script>
+
   </body>
 </html>

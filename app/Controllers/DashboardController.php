@@ -125,6 +125,93 @@ public function getDataInformeGender()
     ]);
 }
 
+public function getInformePublisherGender()
+{
+    // cargamos los publishers para el <select>
+    $publisherModel = new \App\Models\Publisher();
+    $publishers = $publisherModel->findAll();
 
+    return view('dashboard/informe-publisher-gender', [
+        'publishers' => $publishers
+    ]);
+}
+
+public function getDataInformePublisherGender()
+{
+    $this->response->setContentType("application/json");
+
+    $db = \Config\Database::connect();
+    $builder = $db->table('superhero.superhero AS SH');
+    $builder->select('P.publisher_name, G.gender, COUNT(SH.id) AS total');
+    $builder->join('superhero.publisher AS P', 'P.id = SH.publisher_id', 'left');
+    $builder->join('superhero.gender AS G', 'G.id = SH.gender_id', 'left');
+
+    //  Capturamos lo que envía el <select multiple>
+    $publisherIds = $this->request->getPost('publisher_ids');
+    if (!empty($publisherIds) && is_array($publisherIds)) {
+        $builder->whereIn('P.id', $publisherIds);
+    }
+
+    $builder->groupBy('P.publisher_name, G.gender');
+    $builder->orderBy('P.publisher_name, total', 'DESC');
+
+    $data = $builder->get()->getResultArray();
+
+    if (empty($data)) {
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'No se encontraron registros con los filtros seleccionados',
+            'data' => []
+        ]);
+    }
+
+    return $this->response->setJSON([
+        'success' => true,
+        'message' => 'Distribución de géneros por editorial',
+        'data' => $data
+    ]);
+}
+    public function getInformePublisherWeight()
+    {
+        return view('dashboard/informe-publisher-weight');
+    }
+
+    
+    public function getDataPublisherWeights()
+    {
+        $this->response->setContentType("application/json");
+
+        $db = \Config\Database::connect();
+
+        $query = $db->query("
+            SELECT 
+                P.publisher_name,
+                AVG(SH.weight_kg) AS promedio_peso
+            FROM superhero.superhero SH
+            INNER JOIN superhero.publisher P ON P.id = SH.publisher_id
+            WHERE SH.weight_kg IS NOT NULL
+              AND P.publisher_name IS NOT NULL
+              AND P.publisher_name <> ''
+            GROUP BY P.publisher_name
+            HAVING AVG(SH.weight_kg) > 0
+            ORDER BY promedio_peso ASC
+        ");
+
+        $data = $query->getResultArray();
+
+        if (empty($data)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'No se encontraron registros con peso',
+                'data' => []
+            ]);
+        }
+
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => 'Promedio de peso por publisher',
+            'data' => $data
+        ]);
+    }
 
 }

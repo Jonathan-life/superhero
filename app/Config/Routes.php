@@ -29,6 +29,26 @@ $routes->get('public/api/getdatainforme2','DashboardController::getDataInforme2'
 $routes->get('public/api/getdatainforme3','DashboardController::getDataInforme3');
 $routes->get('public/api/getdatainforme3cache','DashboardController::getDataInforme3cache');
 $routes->get('public/api/getDataInformeGender', 'DashboardController::getDataInformeGender');
+
+
+//Grafico gender
 $routes->get('/dashboard/informeGender', function () {
     echo view('dashboard/informeGender');
 });
+
+// =========================
+// RUTAS DE REPORTES VISTA 1
+// =========================
+$routes->get('reportes/ui-gender', 'ReporteController::showUIReportGender');
+$routes->post('reportes/getReportByGender', 'ReporteController::getReportByGender');
+
+// =========================
+// RUTAS DE GRAFICOS VISTA 2
+// =========================
+$routes->get('dashboard/informe-publisher-gender', 'DashboardController::getInformePublisherGender');
+$routes->post('dashboard/getDataInformePublisherGender', 'DashboardController::getDataInformePublisherGender'); // 👈 POST
+// ================================
+// Dashboard - Reporte Promedio Peso vista 3
+// ================================
+$routes->get('dashboard/informe-publisher-weights', 'DashboardController::getInformePublisherWeight');
+$routes->post('dashboard/getDataPublisherWeights', 'DashboardController::getDataPublisherWeights');
