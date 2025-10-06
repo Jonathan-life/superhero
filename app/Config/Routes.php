@@ -5,7 +5,7 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index');
+$routes->get('/', 'AuthController::login');   // segunda
 
 //Reportes
 $routes->get('/reportes/r1', 'ReporteController::getReport1');
@@ -52,3 +52,21 @@ $routes->post('dashboard/getDataInformePublisherGender', 'DashboardController::g
 // ================================
 $routes->get('dashboard/informe-publisher-weights', 'DashboardController::getInformePublisherWeight');
 $routes->post('dashboard/getDataPublisherWeights', 'DashboardController::getDataPublisherWeights');
+
+
+
+
+
+
+// Login 
+$routes->match(['get','post'], 'login', 'AuthController::login');
+$routes->get('perfil', 'AuthController::perfil');
+$routes->get('logout', 'AuthController::logout');
+
+
+
+// Usuarios
+$routes->get('/usuario/crear', 'UsuarioController::formCrear');
+$routes->post('/usuario/crear', 'UsuarioController::crear');
+
+
